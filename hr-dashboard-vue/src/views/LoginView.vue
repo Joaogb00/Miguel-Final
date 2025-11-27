@@ -90,7 +90,7 @@ function login() {
   localStorage.setItem("usuario", JSON.stringify(usuarioEncontrado));
 
   // 👉 Redireciona para o dashboard
-  router.push("/dashboard");
+  router.push("/cadastrado");
 }
 </script>
 

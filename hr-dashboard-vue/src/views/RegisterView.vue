@@ -135,7 +135,9 @@ function register() {
   
   // CORRIGIDO: Não salva como logado, mas redireciona para o login
   setTimeout(() => {
+    console.log("")
       router.push("/login");
+      
   }, 2000); 
 }
 </script>

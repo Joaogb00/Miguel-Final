@@ -1,4 +1,5 @@
 <template>
+  <Headercadastrado/>
   <div v-if="mostrarNotificacao" class="notificacao">
     {{ notificacao }}
   </div>
@@ -76,6 +77,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { Chart, BarController, BarElement, CategoryScale, LinearScale } from "chart.js";
+import Headercadastrado from "./pag_cadastrado/headercadastrado.vue"; // Componente importado corretamente.
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale);
 
@@ -117,13 +119,23 @@ onMounted(() => {
         ? cargosRH[Math.floor(Math.random() * cargosRH.length)]
         : "Funcionário";
     }
+    // Adiciona uma data de admissão se não existir (para simulação)
+    if (!f.admissao) {
+        const dia = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        const mes = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const ano = 2023 + Math.floor(Math.random() * 2);
+        f.admissao = `${dia}/${mes}/${ano}`;
+    }
   });
+
+  // Salva os dados atualizados com cargo/admissão de volta no localStorage
+  localStorage.setItem("usuarios", JSON.stringify(funcionarios.value));
 
   nextTick(() => renderChart());
 });
 
 // Atualizar gráfico quando funcionários mudarem
-watch(funcionarios, () => { nextTick(() => renderChart()); });
+watch(funcionarios, () => { nextTick(() => renderChart()); }, { deep: true });
 
 // Demitir funcionário
 function demitirFuncionario(index) {
@@ -178,8 +190,12 @@ const salariosPorCargo = computed(() => {
   const result = {};
   funcionarios.value.forEach(f => {
     if (f.departamento === "RH") {
-      if (!result[f.cargo]) result[f.cargo] = { salario: salarioBase[f.cargo] || 3000, quantidade: 0 };
-      result[f.cargo].quantidade += 1;
+      // Usa o cargo real do funcionário, se existir, para calcular
+      const cargoKey = f.cargo || "Funcionário"; 
+      if (!result[cargoKey]) {
+          result[cargoKey] = { salario: salarioBase[cargoKey] || 3000, quantidade: 0 };
+      }
+      result[cargoKey].quantidade += 1;
     }
   });
   return result;
@@ -200,7 +216,7 @@ function renderChart() {
       type: "bar",
       data: {
         labels,
-        datasets: [{ label: "Número de funcionários", data, backgroundColor: "#007bff" }] // Alterada a cor do gráfico para combinar
+        datasets: [{ label: "Número de funcionários", data, backgroundColor: "#007bff" }]
       },
       options: {
         responsive: true,
@@ -208,14 +224,20 @@ function renderChart() {
         scales: { y: { beginAtZero: true, ticks: { precision:0 } } }
       }
     });
+    
   }
+  
 }
 </script>
 
 <style scoped>
+*{
+  padding: 0;
+  margin: 0;
+}
 /* ====================================
-   1. Variáveis & Tipografia
-   ==================================== */
+    1. Variáveis & Tipografia
+    ==================================== */
 :root {
   --color-primary-blue: #007bff; /* Cor de Ação/Destaque */
   --color-secondary-grey: #6c757d; /* Cor Secundária */
@@ -246,8 +268,8 @@ function renderChart() {
 }
 
 /* ====================================
-   2. Notificação (Clean)
-   ==================================== */
+    2. Notificação (Clean)
+    ==================================== */
 .notificacao {
   position: fixed;
   top: 20px;
@@ -270,8 +292,8 @@ function renderChart() {
 }
 
 /* ====================================
-   3. Título Principal
-   ==================================== */
+    3. Título Principal
+    ==================================== */
 .titulo-topo {
   margin-top: 0;
   margin-bottom: 40px;
@@ -284,8 +306,8 @@ function renderChart() {
 }
 
 /* ====================================
-   4. Cards de Resumo (Elevation)
-   ==================================== */
+    4. Cards de Resumo (Elevation)
+    ==================================== */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -405,8 +427,8 @@ canvas {
 }
 
 /* ====================================
-   5. Tabela de Funcionários (Clean Grid)
-   ==================================== */
+    5. Tabela de Funcionários (Clean Grid)
+    ==================================== */
 .table-section {
   background: var(--color-surface-white);
   border-radius: 12px;
@@ -483,8 +505,8 @@ select:focus {
 }
 
 /* ====================================
-   6. Botões de Ação (Ícones e Cor)
-   ==================================== */
+    6. Botões de Ação (Ícones e Cor)
+    ==================================== */
 .acoes {
   display: flex;
   gap: 10px;

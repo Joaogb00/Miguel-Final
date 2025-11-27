@@ -6,26 +6,21 @@
     </div>
 
     <nav class="nav" :class="{ open: menuOpen }">
-      <router-link to="/home" active-class="active" @click="menuOpen = false">
+      <router-link to="/cadastrado" active-class="active" @click="menuOpen = false">
         <i class="fas fa-home"></i> Início
       </router-link>
-       <!-- <router-link to="/dashboard" active-class="active" @click="menuOpen = false">
+       <router-link to="/dashboard" active-class="active" @click="menuOpen = false">
         <i class="fas fa-chart-line"></i> Dashboard
       </router-link> 
       <router-link to="/escala" active-class="active" @click="menuOpen = false">
         <i class="fas fa-calendar-alt"></i> Escala
-      </router-link> -->
+      </router-link> 
       
       <div class="access-links">
-        <!-- <router-link to="/perfil" active-class="active" @click="menuOpen = false">
+        <router-link to="/perfil" active-class="active" @click="menuOpen = false">
           <i class="fas fa-user-circle"></i> Perfil
-        </router-link> -->
-        <router-link to="/login" active-class="active" @click="menuOpen = false">
-          <i class="fas fa-sign-in-alt"></i> Entrar
-        </router-link>
-        <router-link to="/register" active-class="active" @click="menuOpen = false">
-          <i class="fas fa-user-plus"></i> Cadastrar
-        </router-link>
+        </router-link> 
+       
       </div>
 
     </nav>
@@ -44,6 +39,10 @@ const menuOpen = ref(false)
 </script>
 
 <style scoped>
+*{
+    padding: 0;
+    margin: 0;
+}
 /* ====================================
    1. Variáveis & Header principal
    ==================================== */

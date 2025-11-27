@@ -1,4 +1,5 @@
 <template>
+  <Headercadastrado/>
   <div class="page-container">
     <div class="perfil-page" v-if="usuario">
 
@@ -68,6 +69,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+// Importação do componente de cabeçalho
+import Headercadastrado from "./pag_cadastrado/headercadastrado.vue";
+
 
 const router = useRouter();
 const usuario = ref(null);
@@ -139,8 +143,8 @@ function removerFuncionario() {
 
 <style scoped>
 /* ====================================
-   1. Variáveis & Layout Geral
-   ==================================== */
+    1. Variáveis & Layout Geral
+    ==================================== */
 :root {
   --color-primary-blue: #007bff;
   --color-secondary-grey: #6c757d;
@@ -163,8 +167,8 @@ function removerFuncionario() {
 }
 
 /* ====================================
-   2. Card de Perfil
-   ==================================== */
+    2. Card de Perfil
+    ==================================== */
 .perfil-card {
   background: var(--color-surface-white);
   padding: 30px;
@@ -206,8 +210,8 @@ function removerFuncionario() {
 }
 
 /* ====================================
-   3. Bloco de Informações
-   ==================================== */
+    3. Bloco de Informações
+    ==================================== */
 .info-block {
   text-align: left;
   background: #f8f9fa;
@@ -267,8 +271,8 @@ function removerFuncionario() {
 }
 
 /* ====================================
-   4. Botões e Ações
-   ==================================== */
+    4. Botões e Ações
+    ==================================== */
 .btn-group {
   display: flex;
   gap: 15px;
@@ -343,8 +347,8 @@ function removerFuncionario() {
 }
 
 /* ====================================
-   5. Feedback/Notificações
-   ==================================== */
+    5. Feedback/Notificações
+    ==================================== */
 .feedback {
     margin-top: 20px;
     padding: 10px;
@@ -369,8 +373,8 @@ function removerFuncionario() {
 }
 
 /* ====================================
-   6. Estado Vazio (No User)
-   ==================================== */
+    6. Estado Vazio (No User)
+    ==================================== */
 .no-user {
   text-align: center;
   padding: 40px;

@@ -1,4 +1,5 @@
 <template>
+  <Headercadastrado/>
   <div class="escala-container">
     <header class="escala-header">
       <h2>📅 Gestão de Escala de Trabalho</h2>
@@ -36,6 +37,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import Headercadastrado from './pag_cadastrado/headercadastrado.vue';
 
 const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
 const turnos = ['Manhã', 'Tarde', 'Folga'];
