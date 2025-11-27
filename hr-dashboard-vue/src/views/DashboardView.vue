@@ -1,5 +1,4 @@
 <template>
-  <!-- Notificação no topo -->
   <div v-if="mostrarNotificacao" class="notificacao">
     {{ notificacao }}
   </div>
@@ -7,9 +6,7 @@
   <div class="dashboard">
     <h2 class="titulo-topo">📊 Painel de Recursos Humanos</h2>
 
-    <!-- Cards de resumo -->
     <div class="cards">
-      <!-- Card Funcionários -->
       <div class="card">
         <h3>👥 Funcionários</h3>
         <p class="number">{{ funcionarios.length }}</p>
@@ -17,7 +14,6 @@
         <canvas ref="funcionariosChart" width="260" height="100"></canvas>
       </div>
 
-      <!-- Card Departamentos -->
       <div class="card">
         <h3>💼 Departamentos</h3>
         <div v-for="(usuarios, dept) in funcionariosPorDepartamento" :key="dept" class="departamento">
@@ -33,7 +29,6 @@
         </div>
       </div>
 
-      <!-- Card Salários por Cargo (RH apenas) -->
       <div class="card">
         <h3>💰 Salários por Cargo (RH)</h3>
         <div v-for="(s, cargo) in salariosPorCargo" :key="cargo" class="salario-item">
@@ -44,7 +39,6 @@
       </div>
     </div>
 
-    <!-- Histórico de funcionários -->
     <div class="table-section">
       <h3>🧾 Histórico de Funcionários</h3>
       <table v-if="funcionarios.length > 0">
@@ -206,7 +200,7 @@ function renderChart() {
       type: "bar",
       data: {
         labels,
-        datasets: [{ label: "Número de funcionários", data, backgroundColor: "#f6c90e" }]
+        datasets: [{ label: "Número de funcionários", data, backgroundColor: "#007bff" }] // Alterada a cor do gráfico para combinar
       },
       options: {
         responsive: true,
@@ -219,61 +213,332 @@ function renderChart() {
 </script>
 
 <style scoped>
+/* ====================================
+   1. Variáveis & Tipografia
+   ==================================== */
+:root {
+  --color-primary-blue: #007bff; /* Cor de Ação/Destaque */
+  --color-secondary-grey: #6c757d; /* Cor Secundária */
+  --color-background-light: #f4f6f9; /* Fundo Suave */
+  --color-surface-white: #ffffff; /* Superfícies (Cards, Tabelas) */
+  --color-text-dark: #212529; /* Texto Principal */
+  --color-accent-green: #28a745; /* Cor de Crescimento/Sucesso */
+  --color-warning-yellow: #ffc107; /* Cor de Aviso/Gráfico */
+  --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Usando uma fonte limpa e moderna */
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--color-background-light);
+  color: var(--color-text-dark);
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ====================================
+   2. Notificação (Clean)
+   ==================================== */
 .notificacao {
   position: fixed;
-  top: 5px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: #2b3a55;
-  color: #fff;
-  padding: 12px 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  font-size: 15px;
-  font-weight: 600;
+  background: var(--color-primary-blue);
+  color: var(--color-surface-white);
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-default);
+  font-size: 1rem;
+  font-weight: 500;
   z-index: 9999;
-  animation: slideDown 0.3s ease;
+  animation: slideDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animação mais suave */
 }
+
 @keyframes slideDown {
-  from { opacity: 0; transform: translate(-50%, -20px); }
+  from { opacity: 0; transform: translate(-50%, -30px); }
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
-.dashboard { max-width: 1100px; margin: 10px auto; padding: 40px; min-height: 100vh; font-family: "Poppins", sans-serif; animation: fadeIn 0.6s ease; }
-.titulo-topo { margin-top: 0; margin-bottom: 30px; font-size: 32px; color: #1f2a44; text-align: center; font-weight: 700; }
+/* ====================================
+   3. Título Principal
+   ==================================== */
+.titulo-topo {
+  margin-top: 0;
+  margin-bottom: 40px;
+  font-size: 2.2rem;
+  color: var(--color-text-dark);
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
 
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; margin-bottom: 40px; }
-.card { background: linear-gradient(90deg, #2b3a55, #3b4a6a); border-radius: 14px; padding: 25px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15); text-align: center; color: #fff; transition: transform 0.25s ease; }
-.card h3 { font-size: 20px; margin-bottom: 12px; color: #f6c90e; }
-.number { font-size: 34px; font-weight: 700; }
-small { color: #e3e7ee; }
-.card:hover { background: #ffffff; color: #2b3a55; transform: translateY(-8px); }
-.card:hover h3, .card:hover .number { color: #2b3a55; }
-.card:hover small { color: #555; }
+/* ====================================
+   4. Cards de Resumo (Elevation)
+   ==================================== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
 
-.departamento, .salario-item { margin-top: 12px; text-align: left; }
-.qtd-departamento, .perc-departamento { display: inline-block; font-size: 12px; margin-left: 5px; color: #f6c90e; }
-.mini-grafico { background: rgba(255,255,255,0.2); border-radius: 6px; height: 10px; margin: 6px 0; overflow: hidden; }
-.barra { height: 100%; background: #f6c90e; border-radius: 6px 0 0 6px; }
-.lista-nomes { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px; }
-.nome-departamento { display: inline-block; background: rgba(246,201,14,0.2); color: #f6c90e; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
+.card {
+  background: var(--color-surface-white);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: var(--shadow-default);
+  transition: all 0.3s ease;
+  border-left: 5px solid var(--color-primary-blue); /* Destaque lateral */
+}
 
-.table-section { background: #ffffff; border-radius: 14px; padding: 20px 25px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15); margin-top: 10px; color: #2b3a55; }
-.table-section h3 { margin: 0 0 15px 0; font-size: 22px; font-weight: 700; }
-table { width: 100%; border-collapse: collapse; background: #ffffff; border-radius: 12px; }
-th { background: #2b3a55; color: white; padding: 14px 12px; font-weight: 600; font-size: 15px; }
-td { padding: 14px 12px; color: #2b3a55; transition: background 0.25s; }
-tbody tr:hover td { background: #f0f4ff; }
-tbody tr td { border-bottom: 1px solid #dce1eb; }
-tbody tr:last-child td { border-bottom: none; }
-.vazio { text-align: center; color: #2b3a55; margin-top: 20px; font-size: 15px; }
-select { padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d5db; cursor: pointer; }
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
 
-.acoes { display: flex; gap: 12px; justify-content: center; }
-.edit-btn { background: #ffffff; border: 1px solid #3b82f6; color: #1e40af; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.25s ease; }
-.edit-btn:hover { background: #e0f0ff; transform: scale(1.1); }
-.delete-btn { background: #ef4444; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.25s ease; }
-.delete-btn:hover { background: #b91c1c; transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+.card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: var(--color-secondary-grey);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-@media (max-width: 850px) { .dashboard { padding: 20px; } th, td { padding: 10px 14px; } }
+.number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  margin-bottom: 5px;
+}
+
+small {
+  color: var(--color-accent-green);
+  font-weight: 600;
+  display: block;
+}
+
+/* Gráfico de Funcionários */
+canvas {
+    max-width: 100%;
+    margin-top: 15px;
+}
+
+/* Conteúdo interno dos Cards (Departamentos/Salários) */
+.departamento, .salario-item {
+  margin-top: 15px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e9ecef;
+  text-align: left;
+  font-size: 0.95rem;
+}
+.card:last-child .departamento, .card:last-child .salario-item {
+  border-bottom: none;
+}
+
+.qtd-departamento, .perc-departamento {
+  display: inline-block;
+  font-size: 0.85rem;
+  margin-left: 5px;
+  color: var(--color-secondary-grey);
+}
+
+/* Mini Gráfico de Barras */
+.mini-grafico {
+  background: #e9ecef;
+  border-radius: 4px;
+  height: 8px;
+  margin: 5px 0 8px 0;
+  overflow: hidden;
+}
+.barra {
+  height: 100%;
+  background: var(--color-primary-blue);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.lista-nomes {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 50px; /* Limita a altura para ser mais clean */
+  overflow: hidden;
+}
+.nome-departamento {
+  display: inline-block;
+  background: #f8f9fa;
+  color: var(--color-secondary-grey);
+  padding: 3px 8px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  border: 1px solid #dee2e6;
+}
+
+.salario-item strong {
+    color: var(--color-primary-blue);
+    font-weight: 600;
+}
+.salario-item span {
+    font-weight: 700;
+    margin-left: 10px;
+    color: var(--color-text-dark);
+}
+.salario-item small {
+    display: inline;
+    color: var(--color-secondary-grey);
+    font-weight: 400;
+    margin-left: 5px;
+}
+
+/* ====================================
+   5. Tabela de Funcionários (Clean Grid)
+   ==================================== */
+.table-section {
+  background: var(--color-surface-white);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: var(--shadow-default);
+  margin-top: 25px;
+}
+.table-section h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+/* Estilo do cabeçalho */
+th {
+  background: var(--color-primary-blue);
+  color: var(--color-surface-white);
+  padding: 12px 18px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+}
+th:last-child {
+    text-align: center; /* Centralizar ações */
+}
+
+/* Estilo das linhas */
+td {
+  padding: 12px 18px;
+  color: var(--color-text-dark);
+  transition: background 0.3s;
+  font-size: 0.95rem;
+}
+tbody tr:hover td {
+  background: #e9f0ff;
+}
+tbody tr td {
+  border-bottom: 1px solid #e9ecef;
+}
+tbody tr:last-child td {
+  border-bottom: none;
+}
+.vazio {
+  text-align: center;
+  color: var(--color-secondary-grey);
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px dashed #dee2e6;
+  border-radius: 8px;
+}
+
+/* Estilo do Select (Dropdown) */
+select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  cursor: pointer;
+  background-color: var(--color-surface-white);
+  font-size: 0.9rem;
+  transition: border-color 0.3s;
+}
+select:focus {
+    outline: none;
+    border-color: var(--color-primary-blue);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* ====================================
+   6. Botões de Ação (Ícones e Cor)
+   ==================================== */
+.acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.edit-btn, .delete-btn {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+  font-weight: 500;
+}
+
+/* Botão Editar */
+.edit-btn {
+  background: #f1f3f5;
+  color: var(--color-secondary-grey);
+}
+.edit-btn:hover {
+  background: var(--color-warning-yellow);
+  color: var(--color-text-dark);
+  transform: translateY(-2px);
+}
+
+/* Botão Demitir */
+.delete-btn {
+  background: #dc3545; /* Vermelho padrão para ação destrutiva */
+  color: #fff;
+}
+.delete-btn:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(220, 53, 69, 0.5);
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+  .dashboard {
+    padding: 20px;
+  }
+}
+@media (max-width: 768px) {
+    .titulo-topo {
+        text-align: center;
+        font-size: 1.8rem;
+    }
+    .table-section {
+        overflow-x: auto; /* Permite scroll horizontal em telas pequenas */
+    }
+    table {
+        min-width: 650px; /* Garante que a tabela não quebre */
+    }
+}
 </style>

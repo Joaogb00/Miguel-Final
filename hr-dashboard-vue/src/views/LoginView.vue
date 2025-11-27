@@ -1,20 +1,27 @@
 <template>
   <div class="page">
-
     <div class="login-card">
-      <h2>Bem-vindo</h2>
-      <p class="subtitle">Acesse sua conta do painel RH</p>
+      <div class="header">
+        <i class="fas fa-users-cog"></i>
+        <h2>Acesso ao Painel RH</h2>
+        <p class="subtitle">Insira suas credenciais para continuar.</p>
+      </div>
 
       <form class="form" @submit.prevent="login">
+        <!-- Notificação de Erro -->
+        <div v-if="erroMensagem" class="alert-error">
+          <i class="fas fa-exclamation-circle"></i> {{ erroMensagem }}
+        </div>
+
         <!-- Campo Email -->
         <div class="input-group">
-          <span class="icon">📧</span>
-          <input v-model="email" type="email" placeholder="E-mail" required />
+          <i class="fas fa-envelope icon"></i>
+          <input v-model="email" type="email" placeholder="E-mail Corporativo" required />
         </div>
 
         <!-- Campo Senha com botão mostrar -->
-        <div class="input-group">
-          <span class="icon">🔒</span>
+        <div class="input-group password-group">
+          <i class="fas fa-lock icon"></i>
           <input 
             :type="mostrarSenha ? 'text' : 'password'"
             v-model="password"
@@ -26,27 +33,28 @@
             type="button"
             class="show-pass"
             @click="mostrarSenha = !mostrarSenha"
+            title="Mostrar Senha"
           >
-            {{ mostrarSenha ? "🙈" : "👁️" }}
+            <i :class="mostrarSenha ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
           </button>
         </div>
 
         <button type="submit" class="btn-login">
-          Entrar
+          <i class="fas fa-sign-in-alt"></i> Entrar
         </button>
       </form>
 
-      <!-- Link adicional -->
-      <p class="forgot-pass">
-        <router-link to="/recuperar">Esqueci minha senha</router-link>
-      </p>
-
-      <p class="register-link">
-        Não tem conta?
-        <router-link to="/register">Criar conta</router-link>
-      </p>
+      <!-- Links adicionais -->
+      <div class="links-footer">
+        <p class="forgot-pass">
+          <router-link to="/recuperar">Esqueceu sua senha?</router-link>
+        </p>
+        <p class="register-link">
+          Ainda não é cadastrado?
+          <router-link to="/register">Crie sua conta aqui</router-link>
+        </p>
+      </div>
     </div>
-
   </div>
 </template>
 
@@ -59,8 +67,11 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 const mostrarSenha = ref(false)
+const erroMensagem = ref('')
 
 function login() {
+  erroMensagem.value = ''; // Limpa erro anterior
+
   // Pega lista de usuários cadastrados
   const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
 
@@ -70,7 +81,8 @@ function login() {
   );
 
   if (!usuarioEncontrado) {
-    alert("Usuário ou senha incorretos.");
+    // Altera a mensagem de erro no UI, em vez de usar alert()
+    erroMensagem.value = "Usuário ou senha inválidos. Tente novamente.";
     return;
   }
 
@@ -83,68 +95,102 @@ function login() {
 </script>
 
 <style scoped>
-/* Fundo com animação suave */
+/* ====================================
+   1. Variáveis & Fundo
+   ==================================== */
+:root {
+  --color-primary-blue: #007bff; /* Cor de Ação/Destaque */
+  --color-accent-yellow: #ffc107; /* Amarelo Secundário/Sucesso */
+  --color-text-dark: #212529; /* Texto Principal */
+  --color-surface-white: #ffffff; /* Fundo do Card */
+  --color-error: #dc3545; /* Cor de Erro */
+  --shadow-default: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
 .page {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-size: 300% 300%;
-  animation: gradient 7s ease infinite;
+  /* Fundo corporativo com degradê suave */
+  background: linear-gradient(135deg, #e9f0ff 0%, #ffffff 50%, #f4f6f9 100%);
   padding: 20px;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: auto; /* Garante que funcione bem em telas pequenas */
 }
 
-/* Card moderno */
+/* ====================================
+   2. Card de Login
+   ==================================== */
 .login-card {
-  width: 340px;
-  padding: 40px 35px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
-  color: #fff;
+  width: 100%;
+  max-width: 380px;
+  padding: 40px;
+  background: var(--color-surface-white);
+  border-radius: 12px;
+  color: var(--color-text-dark);
   text-align: center;
-  animation: fadeIn 0.6s ease;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
-  transition: transform 0.3s ease;
+  box-shadow: var(--shadow-default);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top: 5px solid var(--color-primary-blue);
 }
 
-/* Hover suave */
 .login-card:hover {
-  transform: scale(1.02);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* Títulos */
+.header {
+  margin-bottom: 30px;
+}
+
+.header .fa-users-cog {
+  font-size: 3rem;
+  color: var(--color-primary-blue);
+  margin-bottom: 15px;
+}
+
 h2 {
-  margin-bottom: 6px;
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: var(--color-text-dark);
 }
 
 .subtitle {
-  margin-bottom: 25px;
-  opacity: 0.8;
-  font-size: 14px;
+  opacity: 0.7;
+  font-size: 0.95rem;
+  color: #6c757d;
 }
 
-/* INPUTS */
+/* ====================================
+   3. Campos de Formulário
+   ==================================== */
 .input-group {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.12);
-  padding: 12px 14px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  transition: background 0.25s ease;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .input-group:focus-within {
-  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--color-primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+  background: var(--color-surface-white);
 }
 
 .icon {
-  margin-right: 10px;
-  font-size: 18px;
+  margin-right: 12px;
+  font-size: 1.1rem;
+  color: #6c757d;
+  transition: color 0.3s;
+}
+.input-group:focus-within .icon {
+    color: var(--color-primary-blue);
 }
 
 input {
@@ -152,79 +198,108 @@ input {
   border: none;
   outline: none;
   background: transparent;
-  color: white;
-  font-size: 15px;
+  color: var(--color-text-dark);
+  font-size: 1rem;
+  padding: 0;
+}
+input::placeholder {
+    color: #adb5bd;
 }
 
-/* Mostrar senha */
+/* Botão Mostrar Senha */
+.password-group {
+  position: relative;
+}
+
 .show-pass {
   background: none;
   border: none;
-  color: #fff;
-  font-size: 17px;
+  color: #6c757d;
+  font-size: 1rem;
   cursor: pointer;
   padding: 0;
   margin-left: 8px;
   opacity: 0.8;
-  transition: opacity 0.25s;
+  transition: opacity 0.25s, color 0.3s;
 }
 .show-pass:hover {
   opacity: 1;
+  color: var(--color-primary-blue);
 }
 
-/* Botão login */
+/* ====================================
+   4. Botão de Login
+   ==================================== */
 .btn-login {
   width: 100%;
-  background: linear-gradient(90deg, #f6c90e, #ffd857);
-  color: #1f2a44;
+  background: var(--color-primary-blue);
+  color: var(--color-surface-white);
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 8px;
   border: none;
-  font-size: 16px;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.25s ease;
+  margin-top: 10px;
+  transition: background 0.25s ease, transform 0.25s ease;
 }
 
 .btn-login:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(246, 201, 14, 0.35);
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
 }
 
-/* Links */
+/* ====================================
+   5. Mensagem de Erro
+   ==================================== */
+.alert-error {
+  background: #f8d7da;
+  color: var(--color-error);
+  border: 1px solid #f5c6cb;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ====================================
+   6. Links
+   ==================================== */
+.links-footer {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px dashed #e9ecef;
+}
 .register-link,
 .forgot-pass {
-  margin-top: 15px;
-  font-size: 14px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #6c757d;
 }
 
 .register-link a,
 .forgot-pass a {
   text-decoration: none;
-  color: #f6c90e;
+  color: var(--color-primary-blue);
   font-weight: 600;
 }
 
 .register-link a:hover,
 .forgot-pass a:hover {
-  opacity: 0.75;
+  text-decoration: underline;
+  opacity: 0.8;
 }
 
-/* Animações */
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(15px);
+/* Responsividade */
+@media (max-width: 450px) {
+  .login-card {
+    padding: 30px 20px;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 </style>
